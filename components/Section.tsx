@@ -19,10 +19,12 @@ export const Section: React.FC<SectionProps> = ({ id, title, subtitle, children,
       <div className="max-w-6xl mx-auto">
         {(title || subtitle) && (
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            {...({
+              initial: { opacity: 0, y: 20 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.6 }
+            } as any)}
             className="mb-16 text-center"
           >
             {title && (

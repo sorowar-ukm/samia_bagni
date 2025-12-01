@@ -52,9 +52,11 @@ export const ScienceAssistant: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            {...({
+              initial: { opacity: 0, y: 20, scale: 0.9 },
+              animate: { opacity: 1, y: 0, scale: 1 },
+              exit: { opacity: 0, y: 20, scale: 0.9 }
+            } as any)}
             className="mb-4 w-[350px] max-w-[90vw] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden pointer-events-auto flex flex-col"
             style={{ maxHeight: '500px' }}
           >
@@ -129,8 +131,10 @@ export const ScienceAssistant: React.FC = () => {
       </AnimatePresence>
 
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        {...({
+          whileHover: { scale: 1.1 },
+          whileTap: { scale: 0.9 }
+        } as any)}
         onClick={toggleChat}
         className="pointer-events-auto bg-gradient-to-br from-primary-500 to-accent-500 text-white p-4 rounded-full shadow-lg shadow-primary-500/30 flex items-center justify-center group"
       >

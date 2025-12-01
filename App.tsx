@@ -27,7 +27,7 @@ const App: React.FC = () => {
       {/* Progress Bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500 origin-left z-50"
-        style={{ scaleX }}
+        style={{ scaleX } as any}
       />
 
       {/* Navigation */}
@@ -100,9 +100,11 @@ const App: React.FC = () => {
 
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
           <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            {...({
+              initial: { opacity: 0, x: -50 },
+              animate: { opacity: 1, x: 0 },
+              transition: { duration: 0.8 }
+            } as any)}
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-primary-400 text-sm font-medium mb-6">
               <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
@@ -142,18 +144,20 @@ const App: React.FC = () => {
           </motion.div>
 
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            {...({
+              initial: { opacity: 0, scale: 0.8 },
+              animate: { opacity: 1, scale: 1 },
+              transition: { duration: 0.8, delay: 0.2 }
+            } as any)}
             className="relative"
           >
             <div className="relative aspect-square max-w-md mx-auto">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-500 rounded-[2rem] rotate-3 opacity-20 blur-lg"></div>
               <div className="absolute inset-0 bg-slate-900 rounded-[2rem] border border-slate-700 overflow-hidden flex items-center justify-center group">
                  <img 
-                   src="https://picsum.photos/800/800?grayscale" 
-                   alt="Abstract Science" 
-                   className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700 group-hover:scale-105"
+                   src="./samia.jpg" 
+                   alt="Samia Farhana Zarin" 
+                   className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-all duration-700 scale-[1.75] group-hover:scale-[1.85]"
                  />
                  <div className="absolute bottom-6 left-6 right-6 bg-slate-950/80 backdrop-blur-md p-4 rounded-xl border border-slate-800">
                     <div className="flex items-center gap-3">
@@ -182,9 +186,11 @@ const App: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center">
            <motion.div 
              className="order-2 md:order-1"
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
+             {...({
+               initial: { opacity: 0, y: 20 },
+               whileInView: { opacity: 1, y: 0 },
+               viewport: { once: true }
+             } as any)}
            >
              <p className="text-xl md:text-2xl leading-relaxed text-slate-300 font-light">
                {INTRODUCTION}
@@ -229,11 +235,13 @@ const App: React.FC = () => {
           {ROLES_RESPONSIBILITIES.map((role, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              whileHover={{ y: -5 }}
+              {...({
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { delay: idx * 0.1 },
+                whileHover: { y: -5 }
+              } as any)}
               className="bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-primary-500/30 transition-all group"
             >
               <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-primary-500 mb-6 group-hover:bg-primary-500 group-hover:text-white transition-colors">
@@ -252,9 +260,11 @@ const App: React.FC = () => {
           {SKILLS.map((skillGroup, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              {...({
+                initial: { opacity: 0, x: -20 },
+                whileInView: { opacity: 1, x: 0 },
+                viewport: { once: true }
+              } as any)}
             >
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
                 <span className="w-8 h-1 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full"></span>
@@ -285,9 +295,11 @@ const App: React.FC = () => {
           {EXPERIENCES.map((exp, idx) => (
             <motion.div 
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              {...({
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true }
+              } as any)}
               className={`relative flex items-center gap-8 mb-12 ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
             >
               {/* Timeline Dot */}
@@ -321,7 +333,9 @@ const App: React.FC = () => {
           {ACHIEVEMENTS.map((ach, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.02 }}
+              {...({
+                whileHover: { scale: 1.02 }
+              } as any)}
               className="bg-gradient-to-br from-slate-900 to-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col items-start gap-4"
             >
               <div className="bg-yellow-500/10 p-3 rounded-full text-yellow-500">
