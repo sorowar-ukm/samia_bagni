@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 const apiKey = process.env.API_KEY || '';
@@ -26,5 +27,33 @@ export const generateScienceResponse = async (prompt: string): Promise<string> =
   } catch (error) {
     console.error("Gemini API Error:", error);
     throw new Error("Failed to connect to the science assistant.");
+  }
+};
+
+export const generateScienceImage = async (prompt: string): Promise<string | null> => {
+  if (!ai) {
+    throw new Error("API Key is missing.");
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {
+        parts: [{ text: prompt }]
+      }
+    });
+
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Gemini Image Gen Error:", error);
+    throw new Error("Failed to generate image.");
   }
 };

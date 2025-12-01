@@ -1,3 +1,4 @@
+
 export interface PersonalInfo {
   name: string;
   class: string;
@@ -22,5 +23,6 @@ export interface SkillItem {
 export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
+  image?: string;
   isError?: boolean;
 }

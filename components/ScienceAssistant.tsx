@@ -1,16 +1,18 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Sparkles, Atom } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, Atom, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateScienceResponse } from '../services/geminiService';
+import { generateScienceResponse, generateScienceImage } from '../services/geminiService';
 import { ChatMessage } from '../types';
 
 export const ScienceAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: "Hi! I'm Samia's Science Assistant. Ask me a science fact or about Samia's skills!" }
+    { role: 'model', text: "Hi! I'm Samia's Science Assistant. Ask me a science fact, about Samia's skills, or ask me to generate a science diagram!" }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const toggleChat = () => setIsOpen(!isOpen);
@@ -21,7 +23,7 @@ export const ScienceAssistant: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isLoading]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -31,15 +33,38 @@ export const ScienceAssistant: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setIsLoading(true);
 
-    try {
-      // Contextual prompt injection could happen here, but we rely on system instruction for simplicity
-      const responseText = await generateScienceResponse(userMessage);
-      setMessages(prev => [...prev, { role: 'model', text: responseText }]);
-    } catch (error) {
-        // Only show error if we have an API key configured, otherwise it might just be the demo environment
-       setMessages(prev => [...prev, { role: 'model', text: "I'm currently offline (API Key missing). But I'd love to chat about Biology later!", isError: true }]);
-    } finally {
-      setIsLoading(false);
+    // Simple heuristic to detect image generation requests
+    const isImageRequest = /generate|create|draw|make|show/i.test(userMessage) && /image|picture|photo|diagram|illustration|drawing/i.test(userMessage);
+
+    if (isImageRequest) {
+      setIsGeneratingImage(true);
+      try {
+        const imageData = await generateScienceImage(userMessage);
+        if (imageData) {
+          setMessages(prev => [...prev, { 
+            role: 'model', 
+            text: "Here's what I came up with based on your request:",
+            image: imageData
+          }]);
+        } else {
+          setMessages(prev => [...prev, { role: 'model', text: "I tried to generate an image, but I couldn't quite get it right. Please try again!" }]);
+        }
+      } catch (error) {
+         setMessages(prev => [...prev, { role: 'model', text: "I encountered an error generating the image. Please make sure the API key is valid for image generation.", isError: true }]);
+      } finally {
+        setIsLoading(false);
+        setIsGeneratingImage(false);
+      }
+    } else {
+      // Text response
+      try {
+        const responseText = await generateScienceResponse(userMessage);
+        setMessages(prev => [...prev, { role: 'model', text: responseText }]);
+      } catch (error) {
+         setMessages(prev => [...prev, { role: 'model', text: "I'm currently offline (API Key missing). But I'd love to chat about Biology later!", isError: true }]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -79,10 +104,10 @@ export const ScienceAssistant: React.FC = () => {
               {messages.map((msg, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   <div 
-                    className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                    className={`max-w-[85%] p-3 rounded-2xl text-sm ${
                       msg.role === 'user' 
                         ? 'bg-primary-600 text-white rounded-tr-sm' 
                         : msg.isError 
@@ -92,15 +117,48 @@ export const ScienceAssistant: React.FC = () => {
                   >
                     {msg.text}
                   </div>
+                  {msg.image && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="mt-2 max-w-[85%] rounded-xl overflow-hidden border border-slate-700 shadow-lg"
+                    >
+                      <img src={msg.image} alt="Generated science content" className="w-full h-auto block" />
+                    </motion.div>
+                  )}
                 </div>
               ))}
               {isLoading && (
-                 <div className="flex justify-start">
-                  <div className="bg-slate-800 p-3 rounded-2xl rounded-tl-sm border border-slate-700">
+                 <div className="flex justify-start items-end gap-2 animate-in fade-in duration-300">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-md pb-0.5">
+                      {isGeneratingImage ? 
+                        <ImageIcon className="w-3.5 h-3.5 text-white animate-pulse" /> : 
+                        <Atom className="w-3.5 h-3.5 text-white animate-spin" style={{ animationDuration: '3s' }} />
+                      }
+                    </div>
+                  <div className="bg-slate-800 p-3.5 rounded-2xl rounded-tl-none border border-slate-700 flex items-center gap-3 shadow-sm">
+                    <span className="text-xs font-medium text-primary-300 uppercase tracking-wider">
+                      {isGeneratingImage ? 'Creating Art...' : 'Analyzing...'}
+                    </span>
                     <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                      <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-1.5 h-1.5 bg-accent-400 rounded-full"
+                          {...({
+                            animate: {
+                              y: ["0%", "-50%", "0%"],
+                              opacity: [0.3, 1, 0.3]
+                            },
+                            transition: {
+                              duration: 0.8,
+                              repeat: Infinity,
+                              delay: i * 0.15,
+                              ease: "easeInOut"
+                            }
+                          } as any)}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -115,7 +173,7 @@ export const ScienceAssistant: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Ask about biology..."
+                placeholder="Ask biology or 'generate image'..."
                 className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-200 focus:outline-none focus:border-primary-500 transition-colors"
               />
               <button

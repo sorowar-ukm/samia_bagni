@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { Menu, X, Download, Github, Linkedin, Mail, Microscope, Award, Brain, Users, Globe, ChevronRight } from 'lucide-react';
+import { Menu, X, Download, Github, Linkedin, Mail, Microscope, Award, Brain, Users, Globe, ChevronRight, Maximize2 } from 'lucide-react';
 import { Section } from './components/Section';
 import { ScienceAssistant } from './components/ScienceAssistant';
+import { Modal } from './components/Modal';
 import { PERSONAL_INFO, INTRODUCTION, ROLES_RESPONSIBILITIES, SKILLS, EXPERIENCES, ACHIEVEMENTS, CONCLUSION } from './constants';
 import * as Icons from 'lucide-react';
 
 const App: React.FC = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -157,7 +159,7 @@ const App: React.FC = () => {
                  <img 
                    src="./samia.jpg" 
                    alt="Samia Farhana Zarin" 
-                   className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-all duration-700 scale-[1.75] group-hover:scale-[1.85]"
+                   className="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-all duration-700 scale-[2.0] group-hover:scale-[2.1]"
                  />
                  <div className="absolute bottom-6 left-6 right-6 bg-slate-950/80 backdrop-blur-md p-4 rounded-xl border border-slate-800">
                     <div className="flex items-center gap-3">
@@ -192,9 +194,20 @@ const App: React.FC = () => {
                viewport: { once: true }
              } as any)}
            >
-             <p className="text-xl md:text-2xl leading-relaxed text-slate-300 font-light">
-               {INTRODUCTION}
-             </p>
+             <div 
+                onClick={() => setIsAboutModalOpen(true)}
+                className="group cursor-pointer relative"
+             >
+                <div className="absolute -inset-4 bg-slate-800/50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
+                <p className="text-xl md:text-2xl leading-relaxed text-slate-300 font-light group-hover:text-white transition-colors">
+                  {INTRODUCTION}
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-primary-400 font-medium opacity-80 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 className="w-4 h-4" />
+                    <span className="text-sm uppercase tracking-wide">Read Full Bio</span>
+                </div>
+             </div>
+
              <div className="mt-8 grid grid-cols-2 gap-4">
                 <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-primary-500/50 transition-colors">
                   <Brain className="text-primary-400 mb-2" />
@@ -380,6 +393,53 @@ const App: React.FC = () => {
 
       {/* Interactive Elements */}
       <ScienceAssistant />
+
+      {/* About Modal */}
+      <Modal 
+        isOpen={isAboutModalOpen} 
+        onClose={() => setIsAboutModalOpen(false)} 
+        title="About Samia"
+      >
+        <div className="space-y-6">
+           <div className="flex items-center gap-3 mb-2">
+             <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400">
+               <Microscope className="w-5 h-5" />
+             </div>
+             <div>
+               <h4 className="font-semibold text-white">Science Enthusiast</h4>
+               <span className="text-xs text-slate-400 uppercase tracking-wide">Future Researcher</span>
+             </div>
+           </div>
+           
+           <p className="text-xl leading-relaxed text-slate-200 border-l-2 border-primary-500 pl-4">
+             {INTRODUCTION}
+           </p>
+
+           <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
+              <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                <Brain className="w-5 h-5 text-accent-400" />
+                My Philosophy
+              </h4>
+              <p className="text-slate-300 italic">
+                "Science is not just about memorizing facts, but about understanding the fundamental truths of our universe and using that knowledge to innovate."
+              </p>
+           </div>
+
+           <p className="text-slate-300 text-lg leading-relaxed">
+             Beyond my academic curriculum at {PERSONAL_INFO.institution}, I am deeply invested in extracurriculars that foster leadership and public speaking. 
+             Whether it's organizing science fairs or debating international policies at MUNs, I believe in holistic growth. I constantly strive to explore the depths of scientific knowledge and apply it to real-world challenges.
+           </p>
+
+           <div className="flex flex-wrap gap-2 pt-2">
+             <span className="text-sm text-slate-500 mr-2">Core Interests:</span>
+             {['Biology', 'Research', 'Leadership', 'Public Speaking'].map((tag, i) => (
+                <span key={i} className="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-medium border border-slate-700">
+                  {tag}
+                </span>
+             ))}
+           </div>
+        </div>
+      </Modal>
     </div>
   );
 };
